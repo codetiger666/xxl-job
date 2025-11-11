@@ -1,0 +1,43 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@main
+        with:
+          java-version: 8
+          maven-version: 3.9.8
+
+      - name: check version
+        run: |
+          git checkout 2.4.2
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "2.4.2"
+          name: "XxlJob Admin 2.4.2"
+          draft: false
+          prerelease: false
+
+      - name: Upload firmware with custom name
+        uses: softprops/action-gh-release@v1
+        with:
+          files: xxl-job-admin/target/xxl-job-admin-2.4.2.jar
+          tag_name: "2.4.2"
