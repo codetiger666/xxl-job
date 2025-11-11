@@ -143,29 +143,11 @@ public class XxlJobHelper {
         XxlJobContext xxlJobContext = XxlJobContext.getXxlJobContext();
         if (xxlJobContext == null) {
             return false;
-        }
-
-        /*// "yyyy-MM-dd HH:mm:ss [ClassName]-[MethodName]-[LineNumber]-[ThreadName] log";
-        StackTraceElement[] stackTraceElements = new Throwable().getStackTrace();
-        StackTraceElement callInfo = stackTraceElements[1];*/
-
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(DateUtil.formatDateTime(new Date())).append(" ")
-                .append("["+ callInfo.getClassName() + "#" + callInfo.getMethodName() +"]").append("-")
-                .append("["+ callInfo.getLineNumber() +"]").append("-")
-                .append("["+ Thread.currentThread().getName() +"]").append(" ")
-                .append(appendLog!=null?appendLog:"");
-        String formatAppendLog = stringBuffer.toString();
-
-        // appendlog
-        String logFileName = xxlJobContext.getJobLogFileName();
-
-        if (logFileName!=null && logFileName.trim().length()>0) {
-            XxlJobFileAppender.appendLog(logFileName, formatAppendLog);
-            return true;
         } else {
-            logger.info(">>>>>>>>>>> {}", formatAppendLog);
-            return false;
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append(DateUtil.formatDateTime(new Date())).append(" INFO  ").append(callInfo.getClassName() + ":" + callInfo.getLineNumber()).append(" ").append(appendLog != null ? appendLog : "");
+            System.out.println(stringBuffer);
+            return true;
         }
     }
 
