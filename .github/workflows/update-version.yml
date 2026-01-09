@@ -1,0 +1,51 @@
+name: update-version
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  update-version:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: git init
+        run: |
+          git config --global user.email ${{ secrets.email }}
+          git config --global user.name "codetiger666"
+          git config pull.rebase false
+      
+      - name: get new version and deploy
+        run: |
+          new_version=$(curl -sfL https://api.github.com/repos/xuxueli/xxl-job/releases/latest | jq -r '.tag_name')
+          lastest_version=$(curl -sfL https://api.github.com/repos/codetiger666/xxl-job/releases/latest | jq -r '.[0].name')
+          if [[ -z "$new_version" ]]; then
+            exit 0
+          fi
+          if [[ -z "$lastest_version" ]]; then
+            exit 0
+          fi
+          echo -e "\n获取到的最新版本${new_version}"
+          if [ "$lastest_version" = "$new_version" ]; then
+              exit 0
+          else
+            git clone -b $new_version https://github.com/xuxueli/xxl-job.git
+            cd xxl-job
+            git checkout -b v${new_version} $new_version
+            git remote add codetiger https://${{ secrets.ACCESS_TOKEN }}@github.com/codetiger666/xxl-job.git
+            rm -rf .github/workflows/*
+            cp ../.github/workflows/deploy.yml .github/workflows
+            git add . || true
+            git commit -m "chore: bump version to ${new_version}" || true
+            git tag -d $new_version
+            git tag $new_version
+            git push codetiger $new_version -f
+            curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
+            -d "{\"ref\":\"$new_version\"}"
+          fi

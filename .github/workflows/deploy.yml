@@ -17,12 +17,8 @@ jobs:
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@main
         with:
-          java-version: 8
+          java-version: 17
           maven-version: 3.9.8
-
-      - name: check version
-        run: |
-          git checkout 2.4.2
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
@@ -31,13 +27,13 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "2.4.2"
-          name: "XxlJob Admin 2.4.2"
+          tag_name: ${{ github.ref_name }}
+          name: "XxlJob Admin ${{ github.ref_name }}"
           draft: false
           prerelease: false
 
       - name: Upload firmware with custom name
         uses: softprops/action-gh-release@v1
         with:
-          files: xxl-job-admin/target/xxl-job-admin-2.4.2.jar
-          tag_name: "2.4.2"
+          files: xxl-job-admin/target/xxl-job-admin-${{ github.ref_name }}.jar
+          tag_name: "${{ github.ref_name }}"
