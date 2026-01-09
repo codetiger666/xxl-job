@@ -21,15 +21,18 @@ jobs:
       - name: get new version and deploy
         run: |
           new_version=$(curl -sfL https://api.github.com/repos/xuxueli/xxl-job/releases/latest | jq -r '.tag_name')
-          lastest_version=$(curl -sfL https://api.github.com/repos/codetiger666/xxl-job/releases/latest | jq -r '.[0].name')
+          lastest_version=$(curl -sfL https://api.github.com/repos/codetiger666/xxl-job/releases/latest | jq -r '.name')
           if [[ -z "$new_version" ]]; then
+            echo '获取最新版本失败'
             exit 0
           fi
           if [[ -z "$lastest_version" ]]; then
+            echo '获取仓库版本失败'
             exit 0
           fi
           echo -e "\n获取到的最新版本${new_version}"
           if [ "$lastest_version" = "$new_version" ]; then
+              echo '最新版本已同步'
               exit 0
           else
             git clone -b $new_version https://github.com/xuxueli/xxl-job.git
