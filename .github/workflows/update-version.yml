@@ -21,7 +21,7 @@ jobs:
       - name: get new version and deploy
         run: |
           new_version=$(curl -sfL https://api.github.com/repos/xuxueli/xxl-job/releases/latest | jq -r '.tag_name')
-          lastest_version=$(curl -sfL https://api.github.com/repos/codetiger666/xxl-job/releases/latest | jq -r '.name')
+          lastest_version=$(curl -sfL https://api.github.com/repos/codetiger666/xxl-job/releases/latest | jq -r '.tag_name')
           if [[ -z "$new_version" ]]; then
             echo '获取最新版本失败'
             exit 0
