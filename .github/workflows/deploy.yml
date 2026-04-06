@@ -20,6 +20,12 @@ jobs:
           java-version: 17
           maven-version: 3.9.8
 
+      - name: Extract version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=$GITHUB_REF_NAME" >> $GITHUB_ENV
+
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
@@ -27,13 +33,13 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${GITHUB_REF_NAME#v}
-          name: "XxlJob Admin ${{ github.ref_name }}"
+          tag_name: ${{ env.VERSION }}
+          name: "XxlJob Admin ${{ env.VERSION }}"
           draft: false
           prerelease: false
 
       - name: Upload firmware with custom name
         uses: softprops/action-gh-release@v1
         with:
-          files: xxl-job-admin/target/xxl-job-admin-${GITHUB_REF_NAME#v}.jar
-          tag_name: "${{ github.ref_name }}"
+          files: xxl-job-admin/target/xxl-job-admin-${{ env.VERSION }}.jar
+          tag_name: ${{ env.VERSION }}
