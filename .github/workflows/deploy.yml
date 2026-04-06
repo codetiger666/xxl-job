@@ -27,7 +27,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${GITHUB_REF_NAME#v}
           name: "XxlJob Admin ${{ github.ref_name }}"
           draft: false
           prerelease: false
