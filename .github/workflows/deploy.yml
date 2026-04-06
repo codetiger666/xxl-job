@@ -35,5 +35,5 @@ jobs:
       - name: Upload firmware with custom name
         uses: softprops/action-gh-release@v1
         with:
-          files: xxl-job-admin/target/xxl-job-admin-${{ github.ref_name }}.jar
+          files: xxl-job-admin/target/xxl-job-admin-${GITHUB_REF_NAME#v}.jar
           tag_name: "${{ github.ref_name }}"
