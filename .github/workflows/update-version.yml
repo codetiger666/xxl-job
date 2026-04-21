@@ -1,5 +1,5 @@
 name: update-version
-on: 
+on:
   workflow_dispatch:
   schedule:
     - cron: '0 2 * * *'
@@ -17,7 +17,7 @@ jobs:
           git config --global user.email ${{ secrets.email }}
           git config --global user.name "codetiger666"
           git config pull.rebase false
-      
+
       - name: get new version and deploy
         run: |
           new_version=$(curl -sfL https://api.github.com/repos/xuxueli/xxl-job/releases/latest | jq -r '.tag_name')
@@ -41,6 +41,8 @@ jobs:
             git remote add codetiger https://${{ secrets.ACCESS_TOKEN }}@github.com/codetiger666/xxl-job.git
             rm -rf .github/workflows/*
             cp ../.github/workflows/deploy.yml .github/workflows
+            mv xxl-job-admin/src/main/resources/logback.xml xxl-job-admin/src/main/resources/logback-spring.xml || true
+            rm -rf xxl-job-admin/src/main/resources/logback.xml
             git add . || true
             git commit -m "chore: bump version to ${new_version}" || true
             git tag -d $new_version
